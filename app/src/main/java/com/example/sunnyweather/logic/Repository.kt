@@ -1,26 +1,43 @@
 package com.example.sunnyweather.logic
 
 import androidx.lifecycle.liveData
+import com.example.sunnyweather.logic.model.Place
 import com.example.sunnyweather.logic.network.SunnyWeatherNetwork
 import kotlinx.coroutines.Dispatchers
-import java.lang.RuntimeException
+import retrofit2.http.Query
 
 
 object Repository {
-fun searchPlaces(query:String)  = liveData(Dispatchers.IO)
-{
+//fun searchPlaces(query:String)  = liveData {
+//{
+//    val result = try {
+//        val placeResponse = SunnyWeatherNetwork.searchPlaces(query)
+//        if (placeResponse.status == "ok") {
+//            val places = placeResponse.places
+//            Result.success(places)
+//        }
+//        else{Result.failure(RuntimeException("response status is ${placeResponse.status}"))
+//
+//        }
+//    }catch (e:Exception){
+//        e.stackTrace
+//    }
+//    emit(result)
+//}
+    fun searchPlaces(query: String) = liveData ( Dispatchers.IO){
     val result = try {
         val placeResponse = SunnyWeatherNetwork.searchPlaces(query)
-        if (placeResponse.status == "ok") {
+        if(placeResponse.status =="ok"){
             val places = placeResponse.places
             Result.success(places)
         }
-        else{Result.failure(RuntimeException("response status is ${placeResponse.status}"))
-
+        else{
+            Result.failure(RuntimeException("response status is${placeResponse.status}"))
         }
     }catch (e:Exception){
-        e.stackTrace
+        Result.failure<List<Place>>(e)
     }
     emit(result)
 }
+
 }

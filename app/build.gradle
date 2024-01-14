@@ -6,9 +6,7 @@ plugins {
 android {
     namespace 'com.example.sunnyweather'
     compileSdk 34
-    buildFeatures{
-        viewBinding = true
-    }
+
 
     defaultConfig {
         applicationId "com.example.sunnyweather"
