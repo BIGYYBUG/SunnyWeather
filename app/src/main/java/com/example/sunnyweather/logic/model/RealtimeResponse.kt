@@ -10,7 +10,6 @@ import com.google.gson.annotations.SerializedName
         val temperature: Float,
         @SerializedName("air_quality") val airQuality: AirQuality
     )
-
     data class AirQuality(val aqi: AQI)
     data class AQI(val chn: Float)
 }
