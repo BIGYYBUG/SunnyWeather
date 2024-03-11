@@ -6,10 +6,11 @@ import com.google.gson.annotations.SerializedName
     data class Result(val realtime: Realtime)
     data class Realtime(
         val skycon: String,
+
         val temperature: Float,
-        @SerializedName("air_quality") val airQulity: AirQuality
+        @SerializedName("air_quality") val airQuality: AirQuality
     )
 
-    data class AirQuality(val api: AQI)
+    data class AirQuality(val aqi: AQI)
     data class AQI(val chn: Float)
 }
