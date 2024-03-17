@@ -1,6 +1,7 @@
 package com.example.sunnyweather.logic
 
 import androidx.lifecycle.liveData
+import com.example.sunnyweather.logic.Dao.PlaceDao
 import com.example.sunnyweather.logic.model.Place
 import com.example.sunnyweather.logic.model.Weather
 import com.example.sunnyweather.logic.network.SunnyWeatherNetwork
@@ -39,6 +40,7 @@ object Repository {
         }
         else{
             Result.failure(RuntimeException("response status is${placeResponse.status}"))
+
         }
     }
 
@@ -67,7 +69,7 @@ object Repository {
             }
         }
     }
-}
+
     private fun<T>fire(context:CoroutineContext,block:suspend ()->Result<T>)=
         liveData<Result<T>>(context) {
             val result =try {
@@ -79,3 +81,7 @@ object Repository {
             emit(result)
         }
 
+   fun savePlace(place:Place)= PlaceDao.savePlace(place)
+   fun getSavedPlace()= PlaceDao.getSavedPlace()
+    fun isPlaceSaved()=PlaceDao.isPlaceSaved()
+}

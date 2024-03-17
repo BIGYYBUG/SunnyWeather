@@ -1,33 +1,47 @@
 package com.example.sunnyweather.ui.weather
 
+import android.content.ContentProvider
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.sunnyweather.R
+import com.example.sunnyweather.databinding.ActivityWeatherBinding
 import com.example.sunnyweather.logic.model.Weather
 import com.example.sunnyweather.logic.model.getSky
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class WeatherActivity : AppCompatActivity() {
+  lateinit var  binding : ActivityWeatherBinding
 
-    val viewmodel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
+  val viewmodel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_weather)
 
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityWeatherBinding.inflate(layoutInflater)
+
+
+       setContentView(binding.root)
         if (viewmodel.locationLng.isEmpty()) {
             viewmodel.locationLng = intent.getStringExtra("location_lng") ?: ""
         }
@@ -48,8 +62,42 @@ class WeatherActivity : AppCompatActivity() {
                 result.exceptionOrNull()?.printStackTrace()
 
             }
+
+       binding.swipeRefresh.isRefreshing = false
         })
-        viewmodel.refreshWeather(viewmodel.locationLng, viewmodel.locationLat)
+          binding.swipeRefresh.setColorSchemeResources(com.google.android.material.R.color.design_default_color_primary)
+        refreWeather()
+        binding.swipeRefresh.setOnRefreshListener {
+            refreWeather()
+        }
+        val navBtn = findViewById<Button>(R.id.navBtn)
+
+   navBtn.setOnClickListener  {
+         binding.drawer.openDrawer(GravityCompat.START)
+      }
+        binding.drawer.addDrawerListener(object : DrawerLayout.DrawerListener{
+            override fun onDrawerStateChanged(newState: Int) {}
+
+           override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+           override fun onDrawerOpened(drawerView: View) {}
+
+           override fun onDrawerClosed(drawerView: View) {
+               val manager = getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+                manager.hideSoftInputFromWindow(drawerView.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
+           }
+        })
+    }
+
+     fun refreWeather(){
+
+       viewmodel.refreshWeather(viewmodel.locationLng,viewmodel.locationLat)
+       binding.swipeRefresh.isRefreshing = true
+
+   }
+    fun Closedrawers(){
+        binding.drawer.closeDrawers()
 
     }
 
@@ -99,11 +147,13 @@ class WeatherActivity : AppCompatActivity() {
         val coldRisk = findViewById<TextView>(R.id.coldRiskText)
         val dressing = findViewById<TextView>(R.id.dressingText)
         val ultraviolet = findViewById<TextView>(R.id.ultravioletText)
+        val carwashing = findViewById<TextView>(R.id.carWashingText)
         val weatherLayout = findViewById<ScrollView>(R.id.weatherLayout)
         val lifeIndex = daily.lifeIndex
         coldRisk.text = lifeIndex.coldRisk[0].desc
         dressing.text = lifeIndex.dressing[0].desc
-        ultraviolet.text=lifeIndex.carWashing[0].desc
+        ultraviolet.text=lifeIndex.ultraviolet[0].desc
+        carwashing.text=lifeIndex.carWashing[0].desc
         weatherLayout.visibility=View.VISIBLE
     }
 
